@@ -6,8 +6,12 @@ class User(BaseModel):
     password: str
 
 class UserResponse(BaseModel):
-    id: str
-    email: EmailStr
-    password: str
+    id: str | None = None
+    username: str | None = None
+    email: EmailStr | None = None
 
+
+class UserUpdate(BaseModel):
+    username: str | None = None
+    email: EmailStr | None = None
 
