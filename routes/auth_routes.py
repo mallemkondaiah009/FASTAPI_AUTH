@@ -5,10 +5,15 @@ from passlib.context import CryptContext
 from bson import ObjectId
 
 
+
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 app = FastAPI()
 router = APIRouter()
+
+
 
 @router.post("/register", response_model=UserResponse)
 async def register_user(user:User):
@@ -27,6 +32,9 @@ async def register_user(user:User):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to register User: {str(e)}")
+
+
+
 
 @router.put("/update-user/{user_id}", response_model=UserResponse)
 async def update_user(user_id: str, user_update: UserUpdate):
@@ -115,5 +123,7 @@ async def delete_user(user_id: str):
             raise HTTPException(status_code=404, detail="User not found")
         return {"detail": "User deleted successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")       
+        raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")
+
+       
 app.include_router(router)
