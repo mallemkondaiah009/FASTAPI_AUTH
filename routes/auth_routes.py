@@ -81,5 +81,39 @@ async def get_users():
         return users
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve users: {str(e)}")
-
+    
+@router.get("/get-user/{user_id}", response_model=UserResponse)
+async def get_user(user_id: str):
+    try:
+        if not ObjectId.is_valid(user_id):
+            raise HTTPException(status_code=400, detail="Invalid user ID format")
+        
+        user = await collection.find_one(
+            {"_id": ObjectId(user_id)}
+        )
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return UserResponse(
+            id=str(user["_id"]),
+            username=user["username"],
+            email=user["email"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve user: {str(e)}")
+    
+@router.delete("/delete-user/{user_id}")
+async def delete_user(user_id: str):
+    try:
+        if not ObjectId.is_valid(user_id):
+            raise HTTPException(status_code=400, detail="Invalid user ID format")
+        
+        result = await collection.delete_one(
+            {"_id": ObjectId(user_id)}
+        )
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {"detail": "User deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")       
 app.include_router(router)
